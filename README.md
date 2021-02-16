@@ -1,5 +1,8 @@
 # JNIGenerator
-Generate Kotlin JNI bindings for C headers
+Generate Kotlin JNI bindings for C headers. Features:
+ * Generate Kotlin data classes for C structs.
+ * Generate Kotlin bindings for C functions.
+ * Supports multiple C header files.
 
 ## Usage
 ```sh
@@ -120,4 +123,61 @@ Java_com_jnigen_JniApi_sendMessage(JNIEnv *jenv, jobject instance,
   );
 }
 
+```
+
+## Rules
+### Structs
+Structs in the following form are supported:
+```C
+struct Message {
+    int isUrgent;
+    char* subject;
+    char* text;
+};
+```
+It is important that the opening bracket (`{`) is written in the same line as the `struct`.
+
+`typedef`ed structs (and other `typedef`s) are **not** supported:
+```C
+typedef struct Message {
+    int isUrgent;
+    char* subject;
+    char* text;
+} Message;
+```
+### Pointers
+Pointers are interpreted as arrays, char pointers are interpreted as strings. With the exception of `char*` do not return raw pointers from functions, and do not use them as parameters. Pointers (arrays) must always be wrapped in structs, and must have a corresponding length variable. This length variable must:
+ * be of type int,
+ * must be named the same as the array with the "Length" suffix,
+ * must be directly before the array variable.
+ example:
+```C
+struct Contact {
+    char* name;
+    char* email;
+};
+struct Message {
+    int isUrgent;
+    char* subject;
+    char* text;
+    struct Contact sender;
+    int addresseesLength;
+    struct Contact* addressees;
+};
+```
+### Exclusion from JNI
+You might exclude a function or a struct from the JNI by puttinga `//no-jni` comment directy behind it.
+Excluding a struct:
+```C
+struct Message {
+    int isUrgent;
+    char* subject;
+    char* text;
+};//no-jni
+```
+Excluding a function:
+
+
+```C
+void sendMessage(struct Message message);//no-jni
 ```
