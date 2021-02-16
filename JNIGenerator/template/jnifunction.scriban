@@ -1,0 +1,19 @@
+﻿JNIEXPORT
+{{function.result.targetname}} JNICALL
+Java_{{ api_package }}_{{ api_name }}_{{ name }}(JNIEnv *jenv, jobject instance{{if (array.size parameters) > 0}},{{end}}
+                                              {{ for param in parameters }}{{param.type.targetname}} {{param.name}}{{ if !for.last }}, {{ end }}{{ end }}) {
+  {{ if function.result.targetname != "void"}}{{ if function.result.iscustom }}struct {{ end }}{{function.result.sourcename}} result = {{ end }}{{ name }}(
+      {{~ for param in parameters ~}}
+      {{ if param.type.iscustom }}convertJobjectTo{{param.type.sourcename}}(jenv, {{ param.name }}){{ else }}{{ param.name }}{{ end }}{{ if !for.last }}, {{ end }}
+      {{~ end ~}}
+  );
+  {{~ if function.result.targetname != "void" ~}}
+  {{~ if function.result.iscustom ~}}
+  return convert{{function.result.sourcename}}ToJobject(jenv, result);
+  {{~ else if function.result.sourcename == "char*" ~}}
+  return (*jenv)->NewStringUTF((JNIEnv *) jenv, result);
+  {{~ else ~}}
+  return result;
+  {{~ end ~}}
+  {{~ end ~}}
+}

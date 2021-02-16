@@ -1,0 +1,15 @@
+﻿//  Generated code. Do not edit!
+
+#include <stdlib.h>
+#include "geometry/geometry.h"
+#include "jni.h"
+
+{{ for struct in structs }}
+
+{{ struct }}
+{{ end }}
+
+{{ for function in functions }}
+
+{{ function }}
+{{ end }}

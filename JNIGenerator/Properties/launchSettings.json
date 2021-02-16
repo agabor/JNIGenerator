@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JNIGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "clientzone/clientzone.json"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+﻿
+jclass get{{name}}Class(JNIEnv const *jenv) {
+    return (*jenv)->FindClass((JNIEnv *) jenv, "{{ model_package }}/{{name}}");
+}
+
+jmethodID get{{name}}InitMethodId(JNIEnv const *jenv) {
+    return (*jenv)->GetMethodID((JNIEnv *) jenv, get{{name}}Class(jenv), "<init>", "()V");
+}
+
+jobject create{{name}}(JNIEnv const *jenv) {
+    return (*jenv)->NewObject((JNIEnv *) jenv, get{{name}}Class(jenv), get{{name}}InitMethodId(jenv));
+}
+
+jfieldID get{{name}}FieldID(JNIEnv const *jenv, char *field, char *type) {
+    return (*jenv)->GetFieldID((JNIEnv *) jenv,
+                               get{{name}}Class(
+                                       jenv),
+                               field, type);
+}
+
+jobject convert{{name}}ToJobject(JNIEnv const *jenv, struct {{name}} value) {
+    jobject obj = create{{name}}(jenv);
+    {{~ for property in properties ~}}
+    {{~ if property.type.targetname == "jfloat" ~}}
+    (*jenv)->SetFloatField((JNIEnv*)jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "F"), value.{{property.name}});
+    {{~ else if property.type.targetname == "jint" ~}}
+    (*jenv)->SetIntField((JNIEnv*)jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "I"), value.{{property.name}});
+    {{~ else if property.type.isarray ~}}
+
+    jobjectArray {{property.name}} = (*jenv)->NewObjectArray((JNIEnv *) jenv, {{if property.array_length > 0}}{{property.array_length}}{{else}}value.{{property.name}}Length{{end}}, (*jenv)->FindClass((JNIEnv *) jenv, "{{ model_package }}/{{property.type.sourcename}}"), 0);
+    for (jint i = 0; i < {{if property.array_length > 0}}{{property.array_length}}{{else}}value.{{property.name}}Length{{end}}; ++i) {
+        (*jenv)->SetObjectArrayElement((JNIEnv *) jenv, {{property.name}}, i, convert{{property.type.sourcename}}ToJobject(jenv, value.{{property.name}}[i]));
+    }
+    (*jenv)->SetObjectField((JNIEnv*)jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "[L{{ model_package }}/{{property.type.sourcename}};"), {{property.name}});
+    {{~ else if property.type.sourcename == "char*" ~}}
+    (*jenv)->SetObjectField((JNIEnv*)jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "Ljava/lang/String;"), (*jenv)->NewStringUTF((JNIEnv *) jenv, value.{{property.name}}));
+    {{~ else ~}}
+    (*jenv)->SetObjectField((JNIEnv*)jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "L{{ model_package }}/{{property.type.sourcename}};"), convert{{property.type.sourcename}}ToJobject(jenv, value.{{property.name}}));
+    {{~ end ~}}
+    {{~ end ~}}
+    return obj;
+}
+
+struct {{name}} convertJobjectTo{{name}}(JNIEnv const *jenv, jobject obj) {
+    struct {{name}} result;
+    {{~ for property in properties ~}}
+    {{~ if property.type.targetname == "jfloat" ~}}
+    result.{{property.name}} = (*jenv)->GetFloatField((JNIEnv *) jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "F"));
+    {{~ else if property.type.targetname == "jint" ~}}
+    result.{{property.name}} = (*jenv)->GetIntField((JNIEnv *) jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "I"));
+    {{~ else if property.type.isarray ~}}
+    result.{{property.name}} = malloc(sizeof(struct {{property.type.sourcename}}) * {{if property.array_length > 0}}{{property.array_length}}{{else}}result.{{property.name}}Length{{end}});
+    jobject {{property.name}} = (*jenv)->GetObjectField((JNIEnv *) jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "[L{{ model_package }}/{{property.type.sourcename}};"));
+    for (jint i = 0; i < {{if property.array_length > 0}}{{property.array_length}}{{else}}result.{{property.name}}Length{{end}}; ++i) {
+        jobject arrayElement = (*jenv)->GetObjectArrayElement((JNIEnv *) jenv, {{property.name}}, i);
+        result.{{property.name}}[i] = convertJobjectTo{{property.type.sourcename}}(jenv, arrayElement);
+    }
+    {{~ else if property.type.sourcename == "char*" ~}}
+    result.{{property.name}} = (*jenv)->GetStringUTFChars((JNIEnv *) jenv, (*jenv)->GetObjectField((JNIEnv *) jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "Ljava/lang/String;")), 0);
+    {{~ else ~}}
+    result.{{property.name}} = convertJobjectTo{{property.type.sourcename}}(jenv, (*jenv)->GetObjectField((JNIEnv *) jenv, obj, get{{name}}FieldID(jenv, "{{property.name}}", "L{{ model_package }}/{{property.type.sourcename}};")));
+    {{~ end ~}}
+    {{~ end ~}}
+    return result;
+}

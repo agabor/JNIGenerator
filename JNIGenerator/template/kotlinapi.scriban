@@ -1,0 +1,18 @@
+﻿//Generated code. Do not edit!
+
+package {{ api_package }}
+
+import {{ model_package }}.*
+
+class {{ api_name }} {
+    {{~ for function in functions ~}}
+
+      {{~ function ~}}
+    {{~ end ~}}
+
+    companion object {
+        init {
+            System.loadLibrary("native-lib")
+        }
+    }
+}

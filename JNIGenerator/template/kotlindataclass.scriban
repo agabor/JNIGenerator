@@ -1,0 +1,63 @@
+﻿//Generated code. Do not edit!
+
+package {{ model_package }}
+{{~
+func default
+    if $0.targetname == "Int"
+        ret "0"
+    else if $0.targetname == "Float"
+        ret "0F"
+    else if $0.isarray
+        ret "emptyArray()"
+    end
+    ret $0.targetname + "()"
+end
+
+func hasArrayProperty
+    for property in properties
+        if property.type.isarray
+            ret true
+        end
+    end
+    ret false
+end
+~}}
+
+data class {{name}} ({{ for property in properties }}var {{property.name}}: {{property.type.targetname}} = {{default property.type}}{{ if !for.last }}, {{ end }}{{ end }})
+{{~ if hasArrayProperty ~}}
+{
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as {{name}}
+
+        {{~ for property in properties ~}}
+        {{~ if property.type.isarray ~}}
+        if (!{{property.name}}.contentEquals(other.{{property.name}})) return false
+        {{~ else ~}}
+        if ({{property.name}} != other.{{property.name}}) return false
+        {{~ end ~}}
+        {{~ end ~}}
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = 0
+        {{~ for property in properties ~}}
+        {{~ if property.type.isarray ~}}
+        result = 31 * result + {{property.name}}.contentHashCode()
+        {{~ else if property.type.iscustom ~}}
+        result = 31 * result + {{property.name}}.hashCode()
+        {{~ else if property.type.targetname == "Int" ~}}
+        result = 31 * result + {{property.name}}
+        {{~ else ~}}
+        result = 31 * result + {{property.name}}.toInt()
+        {{~ end ~}}
+        {{~ end ~}}
+        return result
+    }
+}
+{{~ end ~}}
+

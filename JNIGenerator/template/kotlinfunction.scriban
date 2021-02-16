@@ -1,0 +1,1 @@
+﻿    external fun {{ name }}({{ for param in parameters }}{{param.name}}: {{param.type.targetname}}{{ if !for.last }}, {{ end }}{{ end }}){{ if function.result.targetname != "void" }}: {{function.result.targetname}}{{ end }}
