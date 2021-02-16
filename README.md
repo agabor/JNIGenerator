@@ -1,5 +1,21 @@
 # JNIGenerator
-## Generate JNI binding for C headers
+Generate Kotlin JNI bindings for C headers
+
+## Usage
+```sh
+git clone https://github.com/codesharp-hu/JNIGenerator.git
+cd JNIGenerator
+mkdir generated
+cd JNIGenerator
+dotnet run -- template/config.json
+```
+Edit `template/config.json` to
+ * set path to C headers
+ * set outputh pathes
+ * set Kotlin package name(s)
+ * set API calss name
+ 
+To customize ouput, you can edit the [Scriban](https://github.com/scriban/scriban) templates located in the `templates` folder.
 
 ## Examle Input
 
