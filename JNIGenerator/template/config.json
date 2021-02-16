@@ -1,9 +1,9 @@
 {
-    "headers_folder": "",
-    "headers": [""],
-    "kotlin_api_path": "",
-    "kotlin_models_path": "",
-    "jni_path": ".../jni-wrapper.c",
+    "headers_folder": "../example",
+    "headers": ["example.h"],
+    "kotlin_api_path": "../generated/JniApi.kt",
+    "kotlin_models_path": "../generated",
+    "jni_path": "../generated/jni-wrapper.c",
     "kotlin_api_package": "com.jnigen",
     "kotlin_api_name": "JniApi",
     "kotlin_models_package": "com.jnigen.model"

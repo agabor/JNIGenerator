@@ -20,7 +20,7 @@ namespace JNIGenerator
             string modelPackage = config["kotlin_models_package"].ToString();
             TemplateSerializer.WriteKotlinApi(api, config["kotlin_api_path"].ToString(), projectDir, apiPackage, apiName, modelPackage);
             TemplateSerializer.WriteKotlinDataClasses(api, config["kotlin_models_path"].ToString(), projectDir, modelPackage);
-            TemplateSerializer.WriteJNI(api, config["jni_path"].ToString(), projectDir, apiPackage, apiName, modelPackage);
+            TemplateSerializer.WriteJNI(api, config["jni_path"].ToString(), projectDir, apiPackage, apiName, modelPackage, files);
         }
     }
 }

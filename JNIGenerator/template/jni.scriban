@@ -1,7 +1,9 @@
 ﻿//  Generated code. Do not edit!
 
 #include <stdlib.h>
-#include "geometry/geometry.h"
+{{~ for header in headers ~}}
+#include "{{ header }}"
+{{~ end ~}}
 #include "jni.h"
 
 {{ for struct in structs }}

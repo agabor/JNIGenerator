@@ -32,14 +32,14 @@ namespace JNIGenerator
                 file.Close();
             }
         }
-        public static void WriteJNI(Api api, string path, string projectDir, string apiPackage, string apiName, string modelPackage)
+        public static void WriteJNI(Api api, string path, string projectDir, string apiPackage, string apiName, string modelPackage, List<string> headers)
         {
             using (StreamWriter file = new StreamWriter(path, false))
             {
                 var template = Template.Parse(File.ReadAllText(Path.Combine(projectDir, "jni.scriban")));
                 var functions = api.Functions.Select(r => new FunctionSnipet("jnifunction.scriban", api, r, C2JniTypes, projectDir, apiPackage.Replace('.', '_'), apiName).Render());
                 var structs = api.Structs.Select(r => new StructSnipet("jnistructfunctions.scriban", api, r, C2JniTypes, projectDir, modelPackage.Replace('.', '/')).Render());
-                file.Write(template.Render(new { Structs = structs, Functions = functions }));
+                file.Write(template.Render(new { Structs = structs, Functions = functions, Headers = headers }));
                 file.Close();
             }
         }
