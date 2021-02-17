@@ -6,7 +6,7 @@ import com.jnigen.model.*
 
 class JniApi {
 
-    external fun sendMessage(message: Message)
+    external fun sendMessage(message: Message): Int
     companion object {
         init {
             System.loadLibrary("native-lib")

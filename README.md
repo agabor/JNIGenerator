@@ -27,12 +27,11 @@ To customize ouput, you can edit the [Scriban](https://github.com/scriban/scriba
 #define MESSAGE_H
 
 struct Message {
-    int isUrgent;
     char* subject;
     char* text;
 };
 
-void sendMessage(struct Message message);
+int sendMessage(struct Message message);
 
 #endif
 ```
@@ -46,7 +45,7 @@ void sendMessage(struct Message message);
 
 package com.jnigen.model
 
-data class Message (var isUrgent: Int = 0, var subject: String = String(), var text: String = String())
+data class Message (var subject: String = String(), var text: String = String())
 ```
 
 
@@ -60,7 +59,7 @@ import com.jnigen.model.*
 
 class JniApi {
 
-    external fun sendMessage(message: Message)
+    external fun sendMessage(message: Message): Int
     companion object {
         init {
             System.loadLibrary("native-lib")
