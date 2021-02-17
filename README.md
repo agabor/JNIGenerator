@@ -71,59 +71,8 @@ class JniApi {
 
 
 ### jni-wrapper.c
-```C
-//  Generated code. Do not edit!
-
-#include <stdlib.h>
-#include "example.h"
-#include "jni.h"
-
-
-jclass getMessageClass(JNIEnv const *jenv) {
-    return (*jenv)->FindClass((JNIEnv *) jenv, "com/jnigen/model/Message");
-}
-
-jmethodID getMessageInitMethodId(JNIEnv const *jenv) {
-    return (*jenv)->GetMethodID((JNIEnv *) jenv, getMessageClass(jenv), "<init>", "()V");
-}
-
-jobject createMessage(JNIEnv const *jenv) {
-    return (*jenv)->NewObject((JNIEnv *) jenv, getMessageClass(jenv), getMessageInitMethodId(jenv));
-}
-
-jfieldID getMessageFieldID(JNIEnv const *jenv, char *field, char *type) {
-    return (*jenv)->GetFieldID((JNIEnv *) jenv,
-                               getMessageClass(
-                                       jenv),
-                               field, type);
-}
-
-jobject convertMessageToJobject(JNIEnv const *jenv, struct Message value) {
-    jobject obj = createMessage(jenv);
-    (*jenv)->SetIntField((JNIEnv*)jenv, obj, getMessageFieldID(jenv, "isUrgent", "I"), value.isUrgent);
-    (*jenv)->SetObjectField((JNIEnv*)jenv, obj, getMessageFieldID(jenv, "subject", "Ljava/lang/String;"), (*jenv)->NewStringUTF((JNIEnv *) jenv, value.subject));
-    (*jenv)->SetObjectField((JNIEnv*)jenv, obj, getMessageFieldID(jenv, "text", "Ljava/lang/String;"), (*jenv)->NewStringUTF((JNIEnv *) jenv, value.text));
-    return obj;
-}
-
-struct Message convertJobjectToMessage(JNIEnv const *jenv, jobject obj) {
-    struct Message result;
-    result.isUrgent = (*jenv)->GetIntField((JNIEnv *) jenv, obj, getMessageFieldID(jenv, "isUrgent", "I"));
-    result.subject = (*jenv)->GetStringUTFChars((JNIEnv *) jenv, (*jenv)->GetObjectField((JNIEnv *) jenv, obj, getMessageFieldID(jenv, "subject", "Ljava/lang/String;")), 0);
-    result.text = (*jenv)->GetStringUTFChars((JNIEnv *) jenv, (*jenv)->GetObjectField((JNIEnv *) jenv, obj, getMessageFieldID(jenv, "text", "Ljava/lang/String;")), 0);
-    return result;
-}
-
-JNIEXPORT
-void JNICALL
-Java_com_jnigen_JniApi_sendMessage(JNIEnv *jenv, jobject instance,
-                                              jobject message) {
-  sendMessage(
-      convertJobjectToMessage(jenv, message)
-  );
-}
-
-```
+You can find the generated example JNI code here:
+[https://github.com/codesharp-hu/JNIGenerator/blob/master/example-output/jni-wrapper.c](https://github.com/codesharp-hu/JNIGenerator/blob/master/example-output/jni-wrapper.c)
 
 ## Rules
 ### Structs
@@ -165,6 +114,19 @@ struct Message {
     struct Contact* addressees;
 };
 ```
+#### Constant length arrays
+Alternatively, if you has constant an array with constant length, you can indicate it with a comment:
+```C
+struct Message {
+    int isUrgent;
+    char* subject;
+    char* text;
+    struct Contact sender;
+    int addresseesLength;
+    struct Contact* addressees;//array-length:5
+};
+```
+
 ### Exclusion from JNI
 You might exclude a function or a struct from the JNI by puttinga `//no-jni` comment directy behind it.
 Excluding a struct:
