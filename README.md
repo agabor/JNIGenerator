@@ -1,4 +1,4 @@
-# JNIGenerator
+# JNI Generator
 Generate Kotlin JNI bindings for C headers. Features:
  * Generate Kotlin data classes for C structs.
  * Generate Kotlin bindings for C functions.
