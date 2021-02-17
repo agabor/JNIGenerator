@@ -115,7 +115,7 @@ struct Message {
 };
 ```
 #### Constant length arrays
-Alternatively, if you has constant an array with constant length, you can indicate it with a comment:
+Alternatively, if you have an array with constant length, you can indicate it with a comment:
 ```C
 struct Message {
     int isUrgent;
