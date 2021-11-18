@@ -4,8 +4,10 @@ namespace JNIGenerator
     {
         public string Sourcename { get; set; }
         public string Targetname { get; set; }
-        public bool Isprimitive { get; set; }
-        public bool Iscustom { get; set; }
+        public bool Isprimitive => !Iscustom;
+        public bool Iscustom => Isstruct || Isenum;
+        public bool Isstruct { get; set; }
+        public bool Isenum { get; set; }
         public bool Isarray { get; set; }
 
         internal LType Clone()
@@ -14,8 +16,8 @@ namespace JNIGenerator
             {
                 Sourcename = Sourcename,
                 Targetname = Targetname,
-                Isprimitive = Isprimitive,
-                Iscustom = Iscustom,
+                Isenum = Isenum,
+                Isstruct = Isstruct,
                 Isarray = Isarray
             };
         }

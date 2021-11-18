@@ -46,7 +46,8 @@ namespace JNIGenerator
                 }
                 else if (parsingStruct)
                 {
-                    bool isCustom = cleanLine.StartsWith("struct");
+                    bool isStruct = cleanLine.StartsWith("struct");
+                    bool isEnum = cleanLine.StartsWith("enum");
                     if (cleanLine.StartsWith("const"))
                         cleanLine = cleanLine.Substring(6);
                     cleanLine = TrimStructOrEnum(cleanLine);
@@ -77,8 +78,8 @@ namespace JNIGenerator
                             Type = new LType
                             {
                                 Sourcename = type,
-                                Iscustom = isCustom,
-                                Isprimitive = !isCustom,
+                                Isstruct = isStruct,
+                                Isenum = isEnum,
                                 Isarray = isArray
                             },
                             ArrayLength = arrayLength
@@ -88,19 +89,29 @@ namespace JNIGenerator
                 }
                 else if (cleanLine.StartsWith("enum") && !cleanLine.Contains("(") && cleanLine.Contains("{") && cleanLine.EndsWith("};"))
                 {
+                    
+                    if (comment == "no-jni")
+                        continue;
+                    
                     var parts = cleanLine.Split("{");
+                    string name = parts.First().Substring(5).Trim();    
                     string listString = parts.Last().Split("}").First();
-                    api.Enums.Add(new CEnum
+                    var enm = new CEnum
                     {
-                        Name = parts.First().Substring(5).Trim(),
+                        Name = name,
                         Values = listString.Split(",").Select(s => s.Trim()).ToList()
-                    });
+                    };
+                    api.Enums.Add(enm);
+                    
+                    Console.WriteLine(name);
+                    Console.WriteLine($"  {enm.Values.Aggregate((a,b) => $"{a}, {b}")}");
                 }
                 else if (cleanLine.EndsWith(";"))
                 {
                     if (comment == "no-jni")
                         continue;
-                    bool isResultCustom = cleanLine.StartsWith("struct") || cleanLine.StartsWith("enum");
+                    bool isResultStruct = cleanLine.StartsWith("struct");
+                    bool isResultEnum =  cleanLine.StartsWith("enum");
                     cleanLine = TrimLastChar(TrimStructOrEnum(cleanLine));
                     var parts = cleanLine.Split("(");
                     var typeAndName = parts[0].Split(" ");
@@ -109,11 +120,12 @@ namespace JNIGenerator
                     var function = new Function
                     {
                         OperationId = typeAndName[1],
-                        Result = new LType { Sourcename = type, Iscustom = isResultCustom, Isprimitive = !isResultCustom },
+                        Result = new LType { Sourcename = type, Isstruct = isResultStruct, Isenum = isResultEnum },
                         Parameters = parameters.Select(p =>
                         {
                             p = TrimConst(p);
-                            bool isCustom = p.StartsWith("struct");
+                            bool isStruct = p.StartsWith("struct");
+                            bool isEnum = p.StartsWith("enum");
                             var tn = TrimStructOrEnum(p).Split(" ");
                             return new Property
                             {
@@ -121,8 +133,8 @@ namespace JNIGenerator
                                 Type = new LType
                                 {
                                     Sourcename = tn[0],
-                                    Iscustom = isCustom,
-                                    Isprimitive = !isCustom
+                                    Isstruct = isStruct,
+                                    Isenum = isEnum
                                 }
                             };
                         }).ToList()

@@ -33,7 +33,7 @@ public class TypeConverter
         {
             swType.Targetname = targetType;
         }
-        if (typeMapping.ContainsKey("object") && api.Structs.Any(m => m.Name == swType.Sourcename))
+        if (typeMapping.ContainsKey("object") && (api.Structs.Any(m => m.Name == swType.Sourcename) || api.Enums.Any(m => m.Name == swType.Sourcename)))
         {
             swType.Targetname = typeMapping["object"];
         }
