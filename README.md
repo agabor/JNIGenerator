@@ -6,7 +6,7 @@ Generate Kotlin JNI bindings for C headers. Features:
 
 ## Usage
 ```sh
-git clone https://github.com/codesharp-hu/JNIGenerator.git
+git clone https://github.com/agabor/JNIGenerator.git
 cd JNIGenerator
 mkdir generated
 cd JNIGenerator
@@ -71,7 +71,7 @@ class JniApi {
 
 ### jni-wrapper.c
 You can find the generated example JNI code here:
-[https://github.com/codesharp-hu/JNIGenerator/blob/master/example-output/jni-wrapper.c](https://github.com/codesharp-hu/JNIGenerator/blob/master/example-output/jni-wrapper.c)
+[https://github.com/agabor/JNIGenerator/blob/master/example-output/jni-wrapper.c](https://github.com/agabor/JNIGenerator/blob/master/example-output/jni-wrapper.c)
 
 ## Rules
 ### Structs
