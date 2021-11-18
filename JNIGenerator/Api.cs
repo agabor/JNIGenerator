@@ -6,7 +6,8 @@ namespace JNIGenerator
 {
   public class Api
   {
-    public List<Struct> Structs { get; set; }
-    public List<Function> Functions { get; set; }
+    public List<Struct> Structs { get; } = new List<Struct>();
+    public List<CEnum> Enums { get; } = new List<CEnum>();
+    public List<Function> Functions { get;  } = new List<Function>();
   }
 }

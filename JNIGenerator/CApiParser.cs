@@ -10,8 +10,6 @@ namespace JNIGenerator
         public static Api ParseApi(List<string> files)
         {
             var api = new Api();
-            api.Structs = new List<Struct>();
-            api.Functions = new List<Function>();
             bool parsingStruct = false;
             foreach(var path in files)
             foreach (var line in File.ReadAllLines(path))
@@ -87,6 +85,16 @@ namespace JNIGenerator
                         });
                         Console.WriteLine($"  {name}: {type}");
                     }
+                }
+                else if (cleanLine.StartsWith("enum") && !cleanLine.Contains("(") && cleanLine.Contains("{") && cleanLine.EndsWith("};"))
+                {
+                    var parts = cleanLine.Split("{");
+                    string listString = parts.Last().Split("}").First();
+                    api.Enums.Add(new CEnum
+                    {
+                        Name = parts.First().Substring(5).Trim(),
+                        Values = listString.Split(",").Select(s => s.Trim()).ToList()
+                    });
                 }
                 else if (cleanLine.EndsWith(";"))
                 {

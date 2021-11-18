@@ -1,0 +1,9 @@
+﻿//Generated code. Do not edit!
+
+package {{ model_package }}
+
+enum class {{name}} {
+    {{~for value in values ~}}
+    {{value}}{{ if !for.last }}, {{ end }}
+    {{~ end ~}}
+}
