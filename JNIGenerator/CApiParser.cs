@@ -34,7 +34,7 @@ namespace JNIGenerator
                 }
                 else if (cleanLine.StartsWith("struct") && cleanLine.EndsWith("{"))
                 {
-                    cleanLine = TrimStruct(cleanLine);
+                    cleanLine = TrimStructOrEnum(cleanLine);
                     var name = TrimLastChar(cleanLine).Trim();
                     Console.WriteLine(name);
                     api.Structs.Add(new Struct()
@@ -49,7 +49,7 @@ namespace JNIGenerator
                     bool isCustom = cleanLine.StartsWith("struct");
                     if (cleanLine.StartsWith("const"))
                         cleanLine = cleanLine.Substring(6);
-                    cleanLine = TrimStruct(cleanLine);
+                    cleanLine = TrimStructOrEnum(cleanLine);
                     var declParts = cleanLine.Split(' ');
                     var strct = api.Structs.Last();
                     string type = declParts[0].Trim();
@@ -100,8 +100,8 @@ namespace JNIGenerator
                 {
                     if (comment == "no-jni")
                         continue;
-                    bool isResultCustom = cleanLine.StartsWith("struct");
-                    cleanLine = TrimLastChar(TrimStruct(cleanLine));
+                    bool isResultCustom = cleanLine.StartsWith("struct") || cleanLine.StartsWith("enum");
+                    cleanLine = TrimLastChar(TrimStructOrEnum(cleanLine));
                     var parts = cleanLine.Split("(");
                     var typeAndName = parts[0].Split(" ");
                     var parameters = TrimLastChar(parts[1]).Split(",").Select(s => s.Trim()).Where(s => s != "void");
@@ -114,7 +114,7 @@ namespace JNIGenerator
                         {
                             p = TrimConst(p);
                             bool isCustom = p.StartsWith("struct");
-                            var tn = TrimStruct(p).Split(" ");
+                            var tn = TrimStructOrEnum(p).Split(" ");
                             return new Property
                             {
                                 Name = tn[1],
@@ -145,11 +145,15 @@ namespace JNIGenerator
             return cleanLine.Substring(0, cleanLine.Length - 1);
         }
 
-        private static string TrimStruct(string cleanLine)
+        private static string TrimStructOrEnum(string cleanLine)
         {
             if (cleanLine.StartsWith("struct"))
             {
                 cleanLine = cleanLine.Substring(6, cleanLine.Length - 6).Trim();
+            }
+            if (cleanLine.StartsWith("enum"))
+            {
+                cleanLine = cleanLine.Substring(4, cleanLine.Length - 4).Trim();
             }
 
             return cleanLine;
