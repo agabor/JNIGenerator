@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JNIGenerator;
-using Newtonsoft.Json.Linq;
 
 public class TypeConverter
 {
@@ -21,6 +19,7 @@ public class TypeConverter
             if (typeMapping.TryGetValue(property.Type.Sourcename, out string targetType))
             {
                 property.Type.Targetname = targetType;
+                SetDefaultValue(property.Type);
                 return;
             }
         }
@@ -38,10 +37,38 @@ public class TypeConverter
             swType.Targetname = typeMapping["object"];
         }
 
-        if (swType.Isarray) {
-          swType.Targetname = string.Format(typeMapping["array"], swType.Targetname ?? swType.Sourcename);
-          return;
+        if (swType.Isarray)
+        {
+            swType.Targetname = string.Format(typeMapping["array"], swType.Targetname ?? swType.Sourcename);
+        } else {
+            swType.Targetname = swType.Targetname ?? swType.Sourcename ?? string.Empty;
         }
-        swType.Targetname = swType.Targetname ?? swType.Sourcename ?? string.Empty;
+        SetDefaultValue(swType);
+    }
+
+    public void SetDefaultValue(LType swType)
+    {
+        if (swType.Targetname == "Int")
+        {
+            swType.Default = "0";
+        }
+        else if (swType.Targetname == "Float")
+        {
+            swType.Default = "0F";
+        }
+        else if (swType.Isarray)
+        {
+            swType.Default = "emptyArray()";
+        }
+        else if (swType.Isenum)
+        {
+            var enm = api.Enums.FirstOrDefault(e => e.Name == swType.Targetname);
+            if (enm != null)
+                swType.Default = $"{swType.Targetname}.{enm.Values.First()}";
+        }
+        else
+        {
+            swType.Default = $"{swType.Targetname}()";
+        }
     }
 }

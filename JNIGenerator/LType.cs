@@ -9,6 +9,7 @@ namespace JNIGenerator
         public bool Isstruct { get; set; }
         public bool Isenum { get; set; }
         public bool Isarray { get; set; }
+        public string Default { get; set; }
 
         internal LType Clone()
         {
@@ -18,7 +19,8 @@ namespace JNIGenerator
                 Targetname = Targetname,
                 Isenum = Isenum,
                 Isstruct = Isstruct,
-                Isarray = Isarray
+                Isarray = Isarray,
+                Default = Default
             };
         }
     }

@@ -2,16 +2,6 @@
 
 package {{ model_package }}
 {{~
-func default
-    if $0.targetname == "Int"
-        ret "0"
-    else if $0.targetname == "Float"
-        ret "0F"
-    else if $0.isarray
-        ret "emptyArray()"
-    end
-    ret $0.targetname + "()"
-end
 
 func hasArrayProperty
     for property in properties
@@ -23,7 +13,7 @@ func hasArrayProperty
 end
 ~}}
 
-data class {{name}} ({{ for property in properties }}var {{property.name}}: {{property.type.targetname}} = {{default property.type}}{{ if !for.last }}, {{ end }}{{ end }})
+data class {{name}} ({{ for property in properties }}var {{property.name}}: {{property.type.targetname}} = {{property.type.default}}{{ if !for.last }}, {{ end }}{{ end }})
 {{~ if hasArrayProperty ~}}
 {
     override fun equals(other: Any?): Boolean {

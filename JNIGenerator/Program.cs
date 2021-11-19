@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace JNIGenerator
 {
@@ -20,7 +21,10 @@ namespace JNIGenerator
             string modelPackage = config["kotlin_models_package"].ToString();
             TemplateSerializer.WriteKotlinApi(api, config["kotlin_api_path"].ToString(), projectDir, apiPackage, apiName, modelPackage);
             TemplateSerializer.WriteKotlinDataClasses(api, config["kotlin_models_path"].ToString(), projectDir, modelPackage);
-            TemplateSerializer.WriteJNI(api, config["jni_path"].ToString(), projectDir, apiPackage, apiName, modelPackage, files);
+            string jniPath = config["jni_path"].ToString();
+            string jniDir = Path.GetDirectoryName(jniPath);
+            
+            TemplateSerializer.WriteJNI(api, jniPath, projectDir, apiPackage, apiName, modelPackage, files.Select(f => Path.GetRelativePath(jniDir, f)).ToList());
         }
     }
 }
