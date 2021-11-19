@@ -14,15 +14,6 @@ public class TypeConverter
     }
     public void SetTargetType(Property property)
     {
-        if (!property.Required)
-        {
-            if (typeMapping.TryGetValue(property.Type.Sourcename, out string targetType))
-            {
-                property.Type.Targetname = targetType;
-                SetDefaultValue(property.Type);
-                return;
-            }
-        }
         SetTargetType(property.Type);
     }
 
@@ -48,17 +39,17 @@ public class TypeConverter
 
     public void SetDefaultValue(LType swType)
     {
-        if (swType.Targetname == "Int")
+        if (swType.Isarray)
+        {
+            swType.Default = "emptyArray()";
+        }
+        else if (swType.Targetname == "Int")
         {
             swType.Default = "0";
         }
         else if (swType.Targetname == "Float")
         {
             swType.Default = "0F";
-        }
-        else if (swType.Isarray)
-        {
-            swType.Default = "emptyArray()";
         }
         else if (swType.Isenum)
         {

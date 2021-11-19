@@ -24,7 +24,7 @@ static class TemplateSerializer
     {
         using (StreamWriter file = new StreamWriter(path, false))
         {
-            var template = Template.Parse(File.ReadAllText(Path.Combine(projectDir, "kotlinapi.scriban")));
+            var template = Template.Parse(File.ReadAllText(Path.Combine(projectDir, "kotlinapi.scriban")), "kotlinapi.scriban");
             var functions = api.Functions.Select(r => new FunctionSnipet("kotlinfunction.scriban", api, r, C2KotlinTypes, projectDir).Render());
             file.Write(template.Render(new { Functions = functions, ApiPackage = apiPackage, ApiName = apiName, ModelPackage = modelPackage }));
             file.Close();
@@ -34,10 +34,11 @@ static class TemplateSerializer
     {
         using (StreamWriter file = new StreamWriter(path, false))
         {
-            var template = Template.Parse(File.ReadAllText(Path.Combine(projectDir, "jni.scriban")));
+            var template = Template.Parse(File.ReadAllText(Path.Combine(projectDir, "jni.scriban")), "jni.scriban");
             var functions = api.Functions.Select(r => new FunctionSnipet("jnifunction.scriban", api, r, C2JniTypes, projectDir, apiPackage.Replace('.', '_'), apiName).Render());
             var structs = api.Structs.Select(r => new StructSnipet("jnistructfunctions.scriban", api, r, C2JniTypes, projectDir, modelPackage.Replace('.', '/')).Render());
-            file.Write(template.Render(new { Structs = structs, Functions = functions, Headers = headers }));
+            var enums = api.Enums.Select(r => new EnumSnipet("jnienumfunctions.scriban", api, r, projectDir, modelPackage.Replace('.', '/')).Render());
+            file.Write(template.Render(new { Structs = structs, Enums = enums, Functions = functions, Headers = headers }));
             file.Close();
         }
     }

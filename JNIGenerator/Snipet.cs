@@ -17,7 +17,7 @@ namespace JNIGenerator
 
     public string Render()
     {
-      return Template.Parse(File.ReadAllText(scribanFilePath)).Render(this);
+      return Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath).Render(this);
     }
   }
 }

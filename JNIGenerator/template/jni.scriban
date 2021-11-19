@@ -6,6 +6,11 @@
 {{~ end ~}}
 #include "jni.h"
 
+{{ for enum in enums }}
+
+{{ enum }}
+{{ end }}
+
 {{ for struct in structs }}
 
 {{ struct }}
