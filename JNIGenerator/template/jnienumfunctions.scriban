@@ -1,0 +1,22 @@
+﻿
+enum {{name}} convertJobjectTo{{name}}(JNIEnv const *jenv, jobject obj) {
+    jclass cl{{name}}    = (*jenv)->FindClass((JNIEnv *) jenv, "com/wscad/data/model/{{name}}");
+    jmethodID getOrdinal = (*jenv)->GetMethodID((JNIEnv *)jenv, cl{{name}}, "ordinal", "()I");
+    jint value = (*jenv)->CallIntMethod((JNIEnv *)jenv, obj, getOrdinal);
+    return (enum {{name}})value;
+}
+
+
+jobject convert{{name}}ToJobject(JNIEnv const *jenv, enum {{name}} {{name}}) {
+    jclass cl{{name}}    = (*jenv)->FindClass((JNIEnv *) jenv, "com/wscad/data/model/{{name}}");
+    char *enumName;
+    switch ({{name}}) {
+        {{~ for value in values ~}}
+        case {{value}}:
+            enumName = "{{value}}";
+            break;
+        {{~ end ~}}
+    }
+    jfieldID fid = (*jenv)->GetStaticFieldID((JNIEnv *) jenv, cl{{name}} , enumName, "Lcom/wscad/data/model/{{name}};");
+    return (*jenv)->GetStaticObjectField((JNIEnv *) jenv, cl{{name}}, fid);
+}
